@@ -7,7 +7,11 @@ export const app = express()
 
 const main_server_port = 8080
 
-var spotify_client = connect()
+try {
+	var spotify_client = connect()
+} catch(e) {
+	console.log("Spotify not opened")
+}
 
 app.use(body_parser.json())
 app.use(cors())
@@ -15,11 +19,15 @@ app.use(cors())
 app.use("/", express.static("webclient"))
 
 app.get("/spotify/pause", (req, res) => {
+	if (!spotify_client)
+		return res.status(500).send("spotify_client not connected")
 	spotify_client.pause()
 	res.send("ok")
 })
 
 app.get("/spotify/play", (req, res) => {
+	if (!spotify_client)
+		return res.status(500).send("spotify_client not connected")
 	spotify_client.resume()
 	res.send("ok")
 })
